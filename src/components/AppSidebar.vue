@@ -54,6 +54,7 @@ const items = [
                   <component :is="item.icon" />
                   <span>{{ item.title }}</span>
                 </a>
+                <SidebarMenuSubItem>2 </SidebarMenuSubItem>
               </SidebarMenuButton>
             </SidebarMenuItem>
           </SidebarMenu>
