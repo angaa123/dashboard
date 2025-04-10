@@ -21,13 +21,13 @@ const emit = defineEmits<{
 </script>
 
 <template>
-  <div class="tree-item">
+  <div class="tree-item w-full">
     <SidebarMenuItem>
       <SidebarMenuButton @click="emit('toggle', item)">
         <div class="flex items-center">
           <ChevronRight
             v-if="item.children && item.children.length > 0"
-            class="transition-transform duration-200"
+            class="font-bold transition-transform duration-200"
             :class="{ 'rotate-90': item.isOpen }"
           />
           <!-- <component :is="getIcon(item)" class="mr-2 w-4 h-4" /> -->
@@ -58,6 +58,6 @@ const emit = defineEmits<{
 
 <style scoped>
 .tree-item {
-  /* @apply w-full; */
+  @apply w-full;
 }
 </style>

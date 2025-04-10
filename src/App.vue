@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import AppSidebar from "@/components/AppSidebar.vue";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import HelloWorld from "@/components/HelloWorld.vue";
+import Main from "@/components/main.vue";
 import Sonner from "@/components/ui/sonner/Sonner.vue";
 </script>
 
@@ -10,9 +10,9 @@ import Sonner from "@/components/ui/sonner/Sonner.vue";
     <AppSidebar />
     <main>
       <SidebarTrigger />
-      <RouterView />
     </main>
-    <HelloWorld msg="Hello World" />
+
+    <Main />
     <Sonner position="top-right" />
   </SidebarProvider>
 </template>

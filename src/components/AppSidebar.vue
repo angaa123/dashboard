@@ -63,7 +63,7 @@ const toggleItem = (item: MenuItem) => {
         <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->
         <SidebarGroupContent>
           <SidebarMenu>
-            <div class="tree-sidebar">
+            <div class="tree-sidebar flex flex-col w-full">
               <TreeMenuItem
                 v-for="item in menuItems"
                 :key="item.id"
@@ -79,7 +79,7 @@ const toggleItem = (item: MenuItem) => {
 </template>
 
 <style scoped>
-.tree-sidebar {
+/* .tree-sidebar {
   @apply flex flex-col w-full;
-}
+} */
 </style>
