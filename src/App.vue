@@ -2,6 +2,7 @@
 import AppSidebar from "@/components/AppSidebar.vue";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import HelloWorld from "@/components/HelloWorld.vue";
+import Sonner from "@/components/ui/sonner/Sonner.vue";
 </script>
 
 <template>
@@ -12,5 +13,6 @@ import HelloWorld from "@/components/HelloWorld.vue";
       <RouterView />
     </main>
     <HelloWorld msg="Hello World" />
+    <Sonner position="top-right" />
   </SidebarProvider>
 </template>

@@ -1,61 +1,76 @@
 <script setup lang="ts">
-import { Calendar, Home, Inbox, Search, Settings } from "lucide-vue-next";
+import { ref } from "vue";
+import titelData from "@/components/mockdata/titel.json";
+import { toast } from "vue-sonner";
+import TreeMenuItem, { type MenuItem } from "@/components/TreeMenuItem.vue";
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
+  SidebarHeader,
+  // SidebarGroupLabel,
   SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-// Menu items.
-const items = [
-  {
-    title: "Home",
-    url: "#",
-    icon: Home,
-  },
-  {
-    title: "Inbox",
-    url: "#",
-    icon: Inbox,
-  },
-  {
-    title: "Calendar",
-    url: "#",
-    icon: Calendar,
-  },
-  {
-    title: "Search",
-    url: "#",
-    icon: Search,
-  },
-  {
-    title: "Settings",
-    url: "#",
-    icon: Settings,
-  },
-];
+// Convert flat data to hierarchical structure
+const createTreeStructure = (items: any[]): MenuItem[] => {
+  const map = new Map<number, MenuItem>();
+  const result: MenuItem[] = [];
+
+  // First, create a map of all items
+  items.forEach((item) => {
+    const newItem = { ...item, children: [], isOpen: false };
+    map.set(item.id, newItem);
+  });
+
+  // Then, establish parent-child relationships
+  items.forEach((item) => {
+    const current = map.get(item.id);
+    if (item.pid === 0) {
+      result.push(current!);
+    } else {
+      const parent = map.get(item.pid);
+      if (parent) {
+        parent.children?.push(current!);
+      }
+    }
+  });
+
+  return result;
+};
+
+const menuItems = ref(createTreeStructure(titelData.list));
+
+const toggleItem = (item: MenuItem) => {
+  item.isOpen = !item.isOpen;
+  toast(`${item.title} ${item.isOpen ? "expanded" : "collapsed"}`, {
+    duration: 2000,
+  });
+};
 </script>
 
 <template>
   <Sidebar>
     <SidebarContent>
       <SidebarGroup>
-        <SidebarGroupLabel>Application</SidebarGroupLabel>
+        <SidebarHeader>
+          <h1 class="text-xl font-bold">
+            GoSmart iin butegdhuuniig heregleh zaavar
+          </h1>
+          <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->
+        </SidebarHeader>
+        <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->
         <SidebarGroupContent>
           <SidebarMenu>
-            <SidebarMenuItem v-for="item in items" :key="item.title">
-              <SidebarMenuButton asChild>
-                <a :href="item.url">
-                  <component :is="item.icon" />
-                  <span>{{ item.title }}</span>
-                </a>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+            <div class="tree-sidebar">
+              <TreeMenuItem
+                v-for="item in menuItems"
+                :key="item.id"
+                :item="item"
+                @toggle="toggleItem"
+              />
+            </div>
           </SidebarMenu>
         </SidebarGroupContent>
       </SidebarGroup>
@@ -63,4 +78,8 @@ const items = [
   </Sidebar>
 </template>
 
-<style scoped></style>
+<style scoped>
+.tree-sidebar {
+  @apply flex flex-col w-full;
+}
+</style>
