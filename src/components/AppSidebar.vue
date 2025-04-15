@@ -3,6 +3,7 @@ import { ref } from "vue";
 import titelData from "@/components/mockdata/titel.json";
 import { toast } from "vue-sonner";
 import TreeMenuItem, { type MenuItem } from "@/components/TreeMenuItem.vue";
+import axios from "axios";
 import {
   Sidebar,
   SidebarContent,
@@ -12,6 +13,7 @@ import {
   // SidebarGroupLabel,
   SidebarMenu,
 } from "@/components/ui/sidebar";
+import { useRouter } from "vue-router";
 
 // Convert flat data to hierarchical structure
 const createTreeStructure = (items: any[]): MenuItem[] => {
@@ -41,12 +43,65 @@ const createTreeStructure = (items: any[]): MenuItem[] => {
 };
 
 const menuItems = ref(createTreeStructure(titelData.list));
+const menuItems2 = async () => {
+  const response = await axios.post(
+    `${import.meta.env.VITE_API_URL}/Task/WebPages`,
+    {
+      pageSize: 10,
+      pageNumber: 1,
+    },
+    {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    }
+  );
+  console.log(response.data.data.list);
+  menuItems.value = createTreeStructure(response.data.data.list);
+};
+menuItems2();
+const router = useRouter();
 
 const toggleItem = (item: MenuItem) => {
-  item.isOpen = !item.isOpen;
-  toast(`${item.title} ${item.isOpen ? "expanded" : "collapsed"}`, {
+  // Create a deep copy of the menu items to trigger reactivity
+  const updatedItems = JSON.parse(JSON.stringify(menuItems.value));
+
+  // Find and update the item in the tree
+  const updateItemInTree = (items: MenuItem[]): boolean => {
+    for (const menuItem of items) {
+      if (menuItem.id === item.id) {
+        menuItem.Open = !menuItem.Open;
+        return true;
+      }
+      if (menuItem.children?.length) {
+        if (updateItemInTree(menuItem.children)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  };
+
+  updateItemInTree(updatedItems);
+  menuItems.value = updatedItems;
+
+  toast(`${item.title} ${!item.Open ? "expanded" : "collapsed"}`, {
     duration: 2000,
   });
+  switch (item.contentType) {
+    case "list_page":
+      router.push(`/list/${item.listId}`);
+      break;
+    case "single_content":
+      router.push(`/${item.contentId}`);
+      break;
+    case "jump_url":
+      router.push(`${item.url}`);
+      break;
+  }
+  // // Navigate to the page with the correct parameters
+  // const categoryId = item.pid || item.id; // Use parent ID if available, otherwise use item ID
+  // router.push(`/pagr/${item.id}/${categoryId}`);
 };
 </script>
 

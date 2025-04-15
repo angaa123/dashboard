@@ -1,0 +1,30 @@
+{
+  "list": [
+    {
+      "groupId": 6126,
+      "id": 6027634,
+      "relatedPageId": 2306994,
+      "title": "mock1",
+      "date": "2025-04-14T14:33:19",
+      "content": "<p>mock1&nbsp;</p>",
+      "intro": "mock1 intro",
+      "listId": 16515,
+      "cdnUrl": "https://cdn.gosmart.mn/",
+      "viewCount": 1,
+      "defaultAttachUrl": null
+    },
+    {
+      "groupId": 6126,
+      "id": 6027635,
+      "relatedPageId": 2306995,
+      "title": "mock2",
+      "date": "2025-04-14T14:33:19",
+      "content": "<p>mock2&nbsp;</p>",
+      "intro": "mock2 intro",
+      "listId": 16515,
+      "cdnUrl": "https://cdn.gosmart.mn/",
+      "viewCount": 1,
+      "defaultAttachUrl": null
+    }
+  ]
+}

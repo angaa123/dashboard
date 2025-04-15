@@ -7,11 +7,15 @@ export interface MenuItem {
   pid: number;
   title: string;
   children?: MenuItem[];
-  isOpen: boolean;
+  contentType: string;
+  url?: string | null;
+  Open: boolean;
+  contentId?: number | null;
+  listId?: number | null;
   // contentType: string;
 }
 
-defineProps<{
+const { item } = defineProps<{
   item: MenuItem;
 }>();
 
@@ -28,7 +32,7 @@ const emit = defineEmits<{
           <ChevronRight
             v-if="item.children && item.children.length > 0"
             class="font-bold transition-transform duration-200"
-            :class="{ 'rotate-90': item.isOpen }"
+            :class="{ 'rotate-90': item.Open }"
           />
           <!-- <component :is="getIcon(item)" class="mr-2 w-4 h-4" /> -->
           <span
@@ -43,7 +47,7 @@ const emit = defineEmits<{
     </SidebarMenuItem>
 
     <div
-      v-if="item.children && item.children.length > 0 && item.isOpen"
+      v-if="item.children && item.children.length > 0 && item.Open"
       class="pl-4"
     >
       <TreeMenuItem

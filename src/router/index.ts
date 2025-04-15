@@ -1,12 +1,12 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Home from "../pages/home.vue";
-import Page from "../pages/idopo.vue";
-import Page2 from "../pages/page.vue";
+import List from "../pages/list.vue";
+import Page from "../pages/page.vue";
 
 const routes = [
   { path: "/", component: Home },
-  { path: "/pagr/:id/:cat_id", component: Page },
-  { path: "/:cont_id", component: Page2 },
+  { path: "/list/:list_id", component: List },
+  { path: "/:cont_id", component: Page },
 ];
 
 const router = createRouter({
