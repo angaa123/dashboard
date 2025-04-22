@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { ref, computed, watch } from "vue";
 import titelData from "@/components/mockdata/titel.json";
 import { toast } from "vue-sonner";
 import TreeMenuItem, {
@@ -16,6 +16,48 @@ import {
   SidebarMenu,
 } from "@/components/ui/sidebar";
 import { useRouter } from "vue-router";
+import { useRoute } from "vue-router";
+
+const route = useRoute();
+const router = useRouter();
+
+const my_location = computed(() => route.params.titel_id);
+
+// Function to expand menu items based on current route
+const expandCurrentPath = (items: MenuItem[]) => {
+  const currentId = Number(my_location.value);
+  if (!currentId) return;
+
+  const findAndExpandPath = (
+    items: MenuItem[],
+    targetId: number,
+    path: MenuItem[] = []
+  ): boolean => {
+    for (const item of items) {
+      const currentPath = [...path, item];
+
+      // If we found the target item or it's in the children
+      if (item.id === targetId) {
+        // Expand all items in the path
+        currentPath.forEach((pathItem) => {
+          pathItem.Open = true;
+        });
+        return true;
+      }
+
+      // Check children recursively
+      if (
+        item.children?.length &&
+        findAndExpandPath(item.children, targetId, currentPath)
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  findAndExpandPath(items, currentId);
+};
 
 // Convert flat data to hierarchical structure
 const createTreeStructure = (items: any[]): MenuItem[] => {
@@ -60,18 +102,26 @@ const menuItems2 = async () => {
   );
   console.log(response.data.data.list);
   menuItems.value = createTreeStructure(response.data.data.list);
+
+  // Auto-expand menu items based on current location
+  expandCurrentPath(menuItems.value);
 };
 menuItems2();
-const router = useRouter();
 
-const toggleItem = (item: MenuItem) => {
+const toggleItem = async (item: MenuItem) => {
   // Create a deep copy of the menu items to trigger reactivity
   const updatedItems = JSON.parse(JSON.stringify(menuItems.value));
+  const currentId = Number(my_location.value);
 
   // Find and update the item in the tree
   const updateItemInTree = (items: MenuItem[]): boolean => {
     for (const menuItem of items) {
       if (menuItem.id === item.id) {
+        // Don't collapse if this is the current location
+        if (item.id === currentId && item.Open) {
+          return true; // Found but didn't change state
+        }
+
         menuItem.Open = !menuItem.Open;
         return true;
       }
@@ -87,24 +137,42 @@ const toggleItem = (item: MenuItem) => {
   updateItemInTree(updatedItems);
   menuItems.value = updatedItems;
 
-  toast(`${item.title} ${!item.Open ? "expanded" : "collapsed"}`, {
-    duration: 2000,
-  });
+  // If this is the current location and was already expanded, don't show a toggle message
+  if (!(item.id === currentId && item.Open)) {
+    toast(`${item.title} ${!item.Open ? "expanded" : "collapsed"}`, {
+      duration: 2000,
+    });
+  }
+
   switch (item.contentType) {
     case "list_content":
       router.push(`/list/${item.id}/${item.listId}`);
+
       break;
     case "single_content":
       router.push(`/${item.id}/${item.contentId}`);
+
       break;
     case "jump_url":
       router.push(`${item.url}`);
+
       break;
   }
   // // Navigate to the page with the correct parameters
   // const categoryId = item.pid || item.id; // Use parent ID if available, otherwise use item ID
   // router.push(`/pagr/${item.id}/${categoryId}`);
 };
+
+// Watch for route changes to update expanded items
+watch(
+  () => route.params.titel_id,
+  (newId) => {
+    if (newId && menuItems.value.length > 0) {
+      expandCurrentPath(menuItems.value);
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>

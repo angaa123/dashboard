@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { useRoute } from "vue-router";
-import { computed } from "vue";
+import { useRoute, useRouter } from "vue-router";
+import { computed, ref, watch } from "vue";
 import axios from "axios";
 import {
   Card,
@@ -13,7 +13,6 @@ import {
 } from "@/components/ui/card";
 // import apimockdata from "@/components/mockdata/apimockdata.json";
 import type { MockListItem } from "@/types/mock";
-import { ref } from "vue";
 
 // Define interface for the titel data items
 interface TitelDataItem {
@@ -26,12 +25,9 @@ interface TitelDataItem {
 }
 
 const route = useRoute();
+const router = useRouter();
 const cont_id = computed(() => route.params.cont_id);
 const titel_id = computed(() => route.params.titel_id);
-// Find the content by contentId
-// const content = computed<MockListItem | undefined>(() => {
-//   return apimockdata.list.find((item) => item.id === Number(cont_id.value));
-// });
 const content = ref<MockListItem | undefined>(undefined);
 const getContent = async () => {
   try {
@@ -85,10 +81,34 @@ const titelData2 = async () => {
   titelData.value = response.data.data.list;
 };
 titelData2();
+
+const handleClick = async (item: TitelDataItem) => {
+  if (item.contentType === "single_content") {
+    // Navigate first
+    router.push(`/${item.id}/${item.contentId}`);
+    // Then reload the current page after navigation completes
+  } else if (item.contentType === "list_content") {
+    router.push(`/list/${item.id}/${item.listId}`);
+  } else {
+    console.log(item);
+  }
+};
+
+// Watch for route parameter changes to refresh data
+watch(
+  [cont_id, titel_id],
+  ([newContId, newTitelId], [oldContId, oldTitelId]) => {
+    if (newContId !== oldContId || newTitelId !== oldTitelId) {
+      getContent();
+      titelData2();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-  <div class="container mx-auto py-8">
+  <div class="container mx-auto py-8 px-32">
     <div class="mb-8" v-if="content">
       <Card class="mx-auto" :id="content.title">
         <CardHeader>
@@ -118,10 +138,20 @@ titelData2();
         </CardFooter>
       </Card>
     </div>
-    <div v-else class="text-center py-8">
-      <h2 class="text-2xl font-semibold text-gray-600 dark:text-gray-300">
-        Content not found
-      </h2>
+    <div v-else class="text-center w-full flex flex-col gap-4 py-8">
+      <div v-if="titelData.length > 0" class="flex flex-col gap-4">
+        <div
+          v-for="item in titelData"
+          :key="item.id"
+          class="hover:scale-105 w-full hover:shadow-lg transition-all bg-gray-300 border border-gray-950 rounded-md duration-300"
+        >
+          <div class="w-full p-4" @click="handleClick(item)">
+            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+              {{ item.title }}
+            </h1>
+          </div>
+        </div>
+      </div>
     </div>
 
     <section class="mt-12" v-if="titelData.length > 0">

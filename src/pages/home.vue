@@ -65,7 +65,7 @@ all_menuItems_fetch();
         <Search name="mdi:search" class="text-gray-500 flex" />
       </div>
     </div>
-    <div class="w-full grid grid-cols-2 md:grid-cols-3 gap-3 mt-6">
+    <div class="w-full grid grid-cols-2 md:grid-cols-3 gap-3 mt-6 px-32">
       <div v-for="item in filteredMenuItems" :key="item.id" class="w-full">
         <template v-if="item.contentType === 'single_content'">
           <a class="w-full" :href="`/${item.id}/${item.contentId}`">

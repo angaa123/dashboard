@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { computed, ref, onMounted, nextTick } from "vue";
+import { computed, ref, onMounted, nextTick, watch } from "vue";
 import {
   Card,
   CardContent,
@@ -127,10 +127,23 @@ const titelData2 = async () => {
   titelData.value = response.data.data.list;
 };
 titelData2();
+
+// Watch for route parameter changes to refresh data
+watch(
+  [list_id, titel_id],
+  ([newListId, newTitelId], [oldListId, oldTitelId]) => {
+    if (newListId !== oldListId || newTitelId !== oldTitelId) {
+      fetchMainTitle();
+      fetchList();
+      titelData2();
+    }
+  },
+  { immediate: true }
+);
 </script>
 
 <template>
-  <div class="container py-8">
+  <div class="container py-8 md:px-20">
     <h1 class="text-4xl text-center md:text-4xl font-bold mb-8">
       {{ main_title[0].title }}
     </h1>
@@ -160,16 +173,18 @@ titelData2();
           <CardHeader>
             <CardTitle class="text-3xl">{{ item.title }}</CardTitle>
             <CardDescription>{{ item.intro }}</CardDescription>
-            <img
-              :src="
-                item.defaultAttachUrl &&
-                item.defaultAttachUrl.startsWith('http')
-                  ? item.defaultAttachUrl
-                  : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-              "
-              alt="content"
-              class="w-full h-auto"
-            />
+            <div v-if="item.defaultAttachUrl">
+              <img
+                :src="
+                  item.defaultAttachUrl &&
+                  item.defaultAttachUrl.startsWith('http')
+                    ? item.defaultAttachUrl
+                    : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                "
+                alt="content"
+                class="w-full h-auto"
+              />
+            </div>
           </CardHeader>
           <CardContent>
             <div
