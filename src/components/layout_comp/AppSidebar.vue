@@ -2,7 +2,9 @@
 import { ref } from "vue";
 import titelData from "@/components/mockdata/titel.json";
 import { toast } from "vue-sonner";
-import TreeMenuItem, { type MenuItem } from "@/components/TreeMenuItem.vue";
+import TreeMenuItem, {
+  type MenuItem,
+} from "@/components/layout_comp/TreeMenuItem.vue";
 import axios from "axios";
 import {
   Sidebar,
@@ -89,11 +91,11 @@ const toggleItem = (item: MenuItem) => {
     duration: 2000,
   });
   switch (item.contentType) {
-    case "list_page":
-      router.push(`/list/${item.listId}`);
+    case "list_content":
+      router.push(`/list/${item.id}/${item.listId}`);
       break;
     case "single_content":
-      router.push(`/${item.contentId}`);
+      router.push(`/${item.id}/${item.contentId}`);
       break;
     case "jump_url":
       router.push(`${item.url}`);
@@ -110,7 +112,7 @@ const toggleItem = (item: MenuItem) => {
     <SidebarContent>
       <SidebarGroup>
         <SidebarHeader>
-          <h1 class="text-xl font-bold">
+          <h1 class="text-xl mt-16 font-bold">
             GoSmart iin butegdhuuniig heregleh zaavar
           </h1>
           <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->

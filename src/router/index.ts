@@ -5,8 +5,8 @@ import Page from "../pages/page.vue";
 
 const routes = [
   { path: "/", component: Home },
-  { path: "/list/:list_id", component: List },
-  { path: "/:cont_id", component: Page },
+  { path: "/list/:titel_id/:list_id", component: List },
+  { path: "/:titel_id/:cont_id", component: Page },
 ];
 
 const router = createRouter({

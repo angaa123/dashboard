@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import AppSidebar from "@/components/AppSidebar.vue";
+import AppSidebar from "@/components/layout_comp/AppSidebar.vue";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
-import Main from "@/components/main.vue";
+import Main from "@/components/layout_comp/main.vue";
 import Sonner from "@/components/ui/sonner/Sonner.vue";
 import axios from "axios";
 import { nextTick } from "vue";
 import { toast } from "vue-sonner";
+import Header from "@/components/layout_comp/header.vue";
 
 // Check for token in localStorage as fallback
 const token = localStorage.getItem("token");
@@ -47,6 +48,7 @@ verifyToken();
 </script>
 
 <template>
+  <Header />
   <SidebarProvider>
     <AppSidebar />
     <main>

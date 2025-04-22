@@ -8,7 +8,7 @@ export interface MockListItem {
   intro: string;
   listId: number;
   cdnUrl: string;
-  viewCount: number;
+  viewCount?: number;
   defaultAttachUrl: string | null;
 }
 
