@@ -27,7 +27,7 @@ const emit = defineEmits<{
 <template>
   <div class="tree-item w-full">
     <SidebarMenuItem>
-      <SidebarMenuButton @click="emit('toggle', item)">
+      <SidebarMenuButton @click="emit('toggle', item)" class="h-min">
         <div class="flex items-center">
           <ChevronRight
             v-if="item.children && item.children.length > 0"
@@ -35,13 +35,7 @@ const emit = defineEmits<{
             :class="{ 'rotate-90': item.Open }"
           />
           <!-- <component :is="getIcon(item)" class="mr-2 w-4 h-4" /> -->
-          <span
-            :class="
-              'text-sm' +
-              (item.children && item.children.length > 0 ? ' font-bold' : '')
-            "
-            >{{ item.title }}</span
-          >
+          <h1 class="">{{ item.title }}</h1>
         </div>
       </SidebarMenuButton>
     </SidebarMenuItem>
