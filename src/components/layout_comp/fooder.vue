@@ -27,12 +27,15 @@ const navigateToItem = (item: MenuItem) => {
     router.push(`/list/${item.id}/${item.listId}`);
   } else if (item.contentType === "page_content" && item.pageId) {
     router.push(`/page/${item.id}/${item.pageId}`);
+  } else if (item.contentType === "cpta_aboutus" && item.listId) {
+    router.push(`/page/${item.id}/${item.listId}`);
   } else {
+    router.push(`/page/${item.id}/${item.listId}`);
     console.warn(
       `Cannot navigate: Unknown contentType "${item.contentType}" or missing ID property`
     );
     // Fallback navigation - you might want to navigate to a default page
-    router.push(`/item/${item.id}`);
+    // router.push(`/item/${item.id}`);
   }
 };
 

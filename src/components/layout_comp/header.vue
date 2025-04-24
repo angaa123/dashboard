@@ -91,7 +91,7 @@ const navigateToItem_content = async (item: any) => {
       <div class="flex items-center justify-between h-20">
         <a href="/">
           <div class="flex items-center">
-            <img :src="headerLogo" alt="logo" class="h-12 md:h-16" />
+            <img :src="headerLogo" alt="logo" class="h-8 md:h-12" />
           </div>
         </a>
 
