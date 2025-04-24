@@ -6,10 +6,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
+  // CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useSearch } from "@/composables/useSearch";
+import { useRouter } from "vue-router";
 
 //menu item type
 interface MenuItem {
@@ -20,11 +22,19 @@ interface MenuItem {
   [key: string]: any;
 }
 
+const router = useRouter();
+
 //menu items
 const menuItems = ref<MenuItem[]>([]);
+const searchResults = ref<MenuItem[]>([]);
+const searchResults_titels = ref<MenuItem[]>([]);
+const isSearching = ref(false);
 
 //filtered menu items
 const filteredMenuItems = computed(() => {
+  if (isSearching.value && searchResults.value.length > 0) {
+    return searchResults.value;
+  }
   return menuItems.value.filter((item) => item.pid === 0);
 });
 
@@ -33,7 +43,7 @@ const all_menuItems_fetch = async () => {
   const response = await axios.post(
     `${import.meta.env.VITE_API_URL}/Task/WebPages`,
     {
-      pageSize: 10,
+      pageSize: 50,
       pageNumber: 1,
     },
     {
@@ -47,7 +57,70 @@ const all_menuItems_fetch = async () => {
   menuItems.value = response.data.data.list as any;
 };
 all_menuItems_fetch();
-//////////////
+////////////////////////////////////////////////////////////
+//search
+const { search, onFinalSearch } = useSearch();
+
+const handleSearch = async () => {
+  if (!search.value.trim()) {
+    isSearching.value = false;
+    searchResults.value = [];
+    searchResults_titels.value = [];
+    return;
+  }
+
+  isSearching.value = true;
+  const result = await onFinalSearch();
+  searchResults.value = result.unique_arr || [];
+  searchResults_titels.value = result.titelsResults_arr || [];
+};
+
+const navigateToItem = (item: MenuItem) => {
+  if (item.contentType === "single_content") {
+    router.push(`/${item.id}/${item.contentId}`);
+  } else if (item.contentType === "list_content") {
+    router.push(`/list/${item.id}/${item.listId}`);
+  } else {
+    router.push(`/page/${item.id}/${item.contentId}`);
+  }
+};
+
+const navigateToItem_content = async (item: MenuItem) => {
+  const main_title = ref<any[]>([]);
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/Task/WebPages`,
+      {
+        pageSize: 10,
+        pageNumber: 1,
+        FILTERS: [
+          {
+            COLUMN: "listId",
+            OPERATOR: "IS",
+            VALUE: item.listId,
+          },
+        ],
+      },
+      {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      }
+    );
+    main_title.value = response.data.data.list;
+    console.log("main_title", main_title.value);
+
+    if (main_title.value && main_title.value.length > 0) {
+      router.push(
+        `/list/${main_title.value[0].id}/${item.listId}#${item.title}`
+      );
+    } else {
+      console.error("No title data found");
+      router.push(`/list/${item.id}/${item.listId}`);
+    }
+  } catch (error) {
+    console.error("Error fetching title data:", error);
+    router.push(`/list/${item.id}/${item.listId}`);
+  }
+};
 </script>
 
 <template>
@@ -59,30 +132,85 @@ all_menuItems_fetch();
       <input
         type="text"
         placeholder="Search help articles"
+        v-model="search"
         class="w-full h-full bg-none rounded-md focus:outline-none"
+        @input="handleSearch"
+        @change="handleSearch"
       />
       <div class="flex m-3 items-center justify-center">
         <Search name="mdi:search" class="text-gray-500 flex" />
       </div>
     </div>
-    <div class="w-full grid grid-cols-2 md:grid-cols-3 gap-3 mt-6 px-32">
+
+    <!-- Search Results Section -->
+    <div v-if="isSearching && search.trim()" class="w-full mt-4">
+      <h2 class="text-xl font-semibold mb-3">"{{ search }}" хайлтын үр дүн</h2>
+
+      <!-- Results from title search -->
+      <div v-if="searchResults_titels.length > 0" class="mb-5">
+        <h3 class="text-lg font-medium mb-2">Гарчигууд</h3>
+        <div class="space-y-2">
+          <div
+            v-for="item in searchResults_titels"
+            :key="`title-${item.id}`"
+            class="p-3 bg-white border rounded-md shadow-sm hover:shadow-md cursor-pointer"
+            @click="navigateToItem(item)"
+          >
+            <div class="font-medium">{{ item.title }}</div>
+            <div class="text-sm text-gray-500">{{ item.intro }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Results from content search -->
+      <div v-if="searchResults.length > 0" class="mb-5">
+        <h3 class="text-lg font-medium mb-2">Мэдээлэл</h3>
+        <div class="space-y-2">
+          <div
+            v-for="item in searchResults"
+            :key="`content-${item.id}`"
+            class="p-3 bg-white border rounded-md shadow-sm hover:shadow-md cursor-pointer"
+            @click="navigateToItem_content(item)"
+          >
+            <div class="font-medium">{{ item.title }}</div>
+            <div class="text-sm text-gray-500">{{ item.intro }}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- No results message -->
+      <div
+        v-if="searchResults.length === 0 && searchResults_titels.length === 0"
+        class="text-center py-4"
+      >
+        "{{ search }}" байхгүй байна
+      </div>
+    </div>
+
+    <!-- Regular content display when not searching -->
+    <div
+      v-if="!isSearching || !search.trim()"
+      class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-6 lg:px-32 px-4"
+    >
       <div v-for="item in filteredMenuItems" :key="item.id" class="w-full">
         <template v-if="item.contentType === 'single_content'">
           <a class="w-full" :href="`/${item.id}/${item.contentId}`">
             <Card v-if="item" class="mx-auto">
               <CardHeader>
-                <CardTitle class="text-3xl">{{ item.title }}</CardTitle>
+                <div class="w-20 m-auto h-20">
+                  <img
+                    :src="
+                      item.defaultAttachUrl &&
+                      item.defaultAttachUrl.startsWith('http')
+                        ? item.defaultAttachUrl
+                        : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                    "
+                    alt="content"
+                    class="w-full h-full"
+                  />
+                </div>
+                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
                 <CardDescription>{{ item.intro }}</CardDescription>
-                <img
-                  :src="
-                    item.defaultAttachUrl &&
-                    item.defaultAttachUrl.startsWith('http')
-                      ? item.defaultAttachUrl
-                      : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-                  "
-                  alt="content"
-                  class="w-full h-auto"
-                />
               </CardHeader>
               <CardContent>
                 <div
@@ -90,11 +218,6 @@ all_menuItems_fetch();
                   class="text-gray-600 dark:text-gray-300"
                 ></div>
               </CardContent>
-              <CardFooter class="flex justify-between items-center">
-                <span class="text-sm text-muted-foreground">
-                  {{ new Date(item.date).toLocaleDateString() }}
-                </span>
-              </CardFooter>
             </Card>
           </a>
         </template>
@@ -102,18 +225,20 @@ all_menuItems_fetch();
           <a class="w-full" :href="`/list/${item.id}/${item.listId}`">
             <Card v-if="item" class="mx-auto">
               <CardHeader>
-                <CardTitle class="text-3xl">{{ item.title }}</CardTitle>
+                <div class="w-20 m-auto h-20">
+                  <img
+                    :src="
+                      item.defaultAttachUrl &&
+                      item.defaultAttachUrl.startsWith('http')
+                        ? item.defaultAttachUrl
+                        : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                    "
+                    alt="content"
+                    class="w-full h-full"
+                  />
+                </div>
+                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
                 <CardDescription>{{ item.intro }}</CardDescription>
-                <img
-                  :src="
-                    item.defaultAttachUrl &&
-                    item.defaultAttachUrl.startsWith('http')
-                      ? item.defaultAttachUrl
-                      : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-                  "
-                  alt="content"
-                  class="w-full h-auto"
-                />
               </CardHeader>
               <CardContent>
                 <div
@@ -121,11 +246,6 @@ all_menuItems_fetch();
                   class="text-gray-600 dark:text-gray-300"
                 ></div>
               </CardContent>
-              <CardFooter class="flex justify-between items-center">
-                <span class="text-sm text-muted-foreground">
-                  {{ new Date(item.date).toLocaleDateString() }}
-                </span>
-              </CardFooter>
             </Card>
           </a>
         </template>
@@ -133,18 +253,20 @@ all_menuItems_fetch();
           <a class="w-full" :href="`/page/${item.id}/${item.contentId}`">
             <Card v-if="item" class="mx-auto">
               <CardHeader>
-                <CardTitle class="text-3xl">{{ item.title }}</CardTitle>
-                <CardDescription>{{ item.intro }}</CardDescription>
-                <img
-                  :src="
-                    item.defaultAttachUrl &&
-                    item.defaultAttachUrl.startsWith('http')
-                      ? item.defaultAttachUrl
-                      : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-                  "
-                  alt="content"
-                  class="w-full h-auto"
-                />
+                <div class="w-20 m-auto h-20">
+                  <img
+                    :src="
+                      item.defaultAttachUrl &&
+                      item.defaultAttachUrl.startsWith('http')
+                        ? item.defaultAttachUrl
+                        : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                    "
+                    alt="content"
+                    class="w-full h-full"
+                  />
+                </div>
+                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
+                <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
               </CardHeader>
               <CardContent>
                 <div
@@ -152,11 +274,6 @@ all_menuItems_fetch();
                   class="text-gray-600 dark:text-gray-300"
                 ></div>
               </CardContent>
-              <CardFooter class="flex justify-between items-center">
-                <span class="text-sm text-muted-foreground">
-                  {{ new Date(item.date).toLocaleDateString() }}
-                </span>
-              </CardFooter>
             </Card>
           </a>
         </template>

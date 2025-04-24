@@ -25,7 +25,7 @@ const fetchMainTitle = async () => {
   const response = await axios.post(
     `${import.meta.env.VITE_API_URL}/Task/WebPages`,
     {
-      pageSize: 10,
+      pageSize: 50,
       pageNumber: 1,
       FILTERS: [
         {
@@ -46,7 +46,7 @@ fetchMainTitle();
 //fetch list data from api
 const fetchList = async () => {
   const response = await axios.post(
-    `${import.meta.env.VITE_API_URL}/Task/WebItems`,
+    `${import.meta.env.VITE_API_URL}/Task/WebItemDetails`,
     {
       pageSize: 10,
       pageNumber: 1,
@@ -74,7 +74,7 @@ const fetchList = async () => {
 // Function to scroll to element based on URL hash
 const scrollToHashElement = () => {
   if (window.location.hash) {
-    const id = window.location.hash.substring(1);
+    const id = decodeURIComponent(window.location.hash.substring(1));
     const element = document.getElementById(id);
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
@@ -88,7 +88,7 @@ const handleAnchorClick = (event: Event, itemTitle: string) => {
   const element = document.getElementById(itemTitle);
   if (element) {
     // Update URL hash for sharing
-    window.history.pushState(null, "", `#${itemTitle}`);
+    window.history.pushState(null, "", `#${encodeURIComponent(itemTitle)}`);
     // Smooth scroll to element
     element.scrollIntoView({ behavior: "smooth" });
   }
@@ -143,7 +143,7 @@ watch(
 </script>
 
 <template>
-  <div class="container py-8 md:px-20">
+  <div class="container py-8 xl:px-20">
     <h1 class="text-4xl text-center md:text-4xl font-bold mb-8">
       {{ main_title[0].title }}
     </h1>
@@ -163,7 +163,7 @@ watch(
       {{ main_title[0].intro }}
     </p>
     <div class="gap-6 flex relative">
-      <div class="w-full flex flex-col gap-4 md:w-5/6">
+      <div class="w-full flex flex-col gap-4 xl:w-5/6">
         <Card
           v-for="item in list"
           :key="item.id"
@@ -246,7 +246,7 @@ watch(
           <Card>
             <CardHeader>
               <CardTitle class="">{{ item.title }}</CardTitle>
-              <CardDescription>{{ item.intro }}</CardDescription>
+              <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
             </CardHeader>
           </Card>
         </a>

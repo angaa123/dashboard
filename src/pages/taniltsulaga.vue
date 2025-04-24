@@ -89,6 +89,8 @@ const handleClick = async (item: TitelDataItem) => {
     // Then reload the current page after navigation completes
   } else if (item.contentType === "list_content") {
     router.push(`/list/${item.id}/${item.listId}`);
+  } else if (item.contentType === "cpta_aboutus") {
+    router.push(`/page/${item.id}/${item.contentId}`);
   } else {
     console.log(item);
   }
@@ -108,7 +110,7 @@ watch(
 </script>
 
 <template>
-  <div class="container mx-auto py-8 px-32">
+  <div class="container mx-auto py-8 px-4 lg:px-32">
     <div class="mb-8" v-if="content">
       <Card class="mx-auto" :id="content.title">
         <CardHeader>
@@ -125,7 +127,7 @@ watch(
             class="w-full h-auto rounded-md object-cover mt-4"
           />
         </CardHeader>
-        <CardContent>
+        <CardContent class="prose h-full max-w-none">
           <div
             v-html="content.content"
             class="text-gray-600 dark:text-gray-300 content prose max-w-none"
@@ -168,7 +170,7 @@ watch(
             <Card class="h-full">
               <CardHeader>
                 <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <CardDescription>{{ item.intro }}</CardDescription>
+                <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
               </CardHeader>
             </Card>
           </a>
@@ -180,7 +182,18 @@ watch(
             <Card class="h-full">
               <CardHeader>
                 <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
+                <CardDescription>{{ item.intro }}</CardDescription>
+              </CardHeader>
+            </Card>
+          </a>
+          <a
+            v-if="item.contentType === 'cpta_aboutus'"
+            :href="`/page/${item.id}/${item.contentId}`"
+          >
+            <Card class="h-full">
+              <CardHeader>
+                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
+                <CardDescription>{{ item.intro }}</CardDescription>
               </CardHeader>
             </Card>
           </a>

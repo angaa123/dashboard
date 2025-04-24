@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import axios from "axios";
 import { ref, computed } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 //menu item type
 interface MenuItem {
@@ -14,6 +17,25 @@ interface MenuItem {
 //menu items
 const menuItems = ref<MenuItem[]>([]);
 
+//navigate to item
+const navigateToItem = (item: MenuItem) => {
+  console.log("Navigating to item:", item);
+
+  if (item.contentType === "single_content" && item.contentId) {
+    router.push(`/${item.id}/${item.contentId}`);
+  } else if (item.contentType === "list_content" && item.listId) {
+    router.push(`/list/${item.id}/${item.listId}`);
+  } else if (item.contentType === "page_content" && item.pageId) {
+    router.push(`/page/${item.id}/${item.pageId}`);
+  } else {
+    console.warn(
+      `Cannot navigate: Unknown contentType "${item.contentType}" or missing ID property`
+    );
+    // Fallback navigation - you might want to navigate to a default page
+    router.push(`/item/${item.id}`);
+  }
+};
+
 //filtered menu items
 const filteredMenuItems = computed(() => {
   return menuItems.value.filter((item) => item.pid === 0);
@@ -21,21 +43,34 @@ const filteredMenuItems = computed(() => {
 
 //fetch all menu items
 const all_menuItems_fetch = async () => {
-  const response = await axios.post(
-    `${import.meta.env.VITE_API_URL}/Task/WebPages`,
-    {
-      pageSize: 10,
-      pageNumber: 1,
-    },
-    {
-      headers: {
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/Task/WebPages`,
+      {
+        pageSize: 10,
+        pageNumber: 1,
       },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+    console.log("API Response:", response.data.data.list);
+
+    // Validate items before assigning
+    const items = response.data.data.list || [];
+    if (items.length === 0) {
+      console.warn("No menu items received from API");
+    } else {
+      // Log first item to check structure
+      console.log("Sample menu item structure:", items[0]);
     }
-  );
-  console.log(response.data.data.list);
-  // menuItems.value = createTreeStructure(response.data.data.list);
-  menuItems.value = response.data.data.list as any;
+
+    menuItems.value = items;
+  } catch (error) {
+    console.error("Error fetching menu items:", error);
+  }
 };
 all_menuItems_fetch();
 </script>
@@ -44,31 +79,13 @@ all_menuItems_fetch();
   <footer class="bg-gray-200 font-bold text-gray-700 p-4 rounded-t-lg">
     <div class="container mx-auto">
       <div class="grid grid-cols-3 my-4 gap-2">
-        <div v-for="item in filteredMenuItems" :key="item.id" class="">
-          <template v-if="item.contentType === 'single_content'">
-            <a
-              class="text-center h-12 m-1"
-              :href="`/${item.id}/${item.contentId}`"
-            >
-              <p class="text-center h-12 m-1">{{ item.title }}</p>
-            </a>
-          </template>
-          <template v-else-if="item.contentType === 'list_content'">
-            <a
-              class="text-center h-12 m-1"
-              :href="`/list/${item.id}/${item.listId}`"
-            >
-              <p class="text-center h-12 m-1">{{ item.title }}</p>
-            </a>
-          </template>
-          <template v-else>
-            <a
-              class="text-center h-12 m-1"
-              :href="`page/${item.id}/${item.pageId}`"
-            >
-              <p class="text-center h-12 m-1">{{ item.title }}</p>
-            </a>
-          </template>
+        <div v-for="item in filteredMenuItems" :key="item.id" class="mx-auto">
+          <button
+            class="text-center mx-auto h-12"
+            @click="navigateToItem(item)"
+          >
+            {{ item.title }}
+          </button>
         </div>
       </div>
       <div class="grid border-t border-gray-500 pt-5 grid-cols-3 my-4 gap-2">

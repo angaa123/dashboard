@@ -1,10 +1,12 @@
+// import type { HtmlHTMLAttributes } from "vue";
+
 export interface MockListItem {
   groupId: number;
   id: number;
   relatedPageId: number;
   title: string;
   date: string;
-  content: string;
+  content?: string;
   intro: string;
   listId: number;
   cdnUrl: string;

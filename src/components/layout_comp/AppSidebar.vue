@@ -91,7 +91,7 @@ const menuItems2 = async () => {
   const response = await axios.post(
     `${import.meta.env.VITE_API_URL}/Task/WebPages`,
     {
-      pageSize: 10,
+      pageSize: 100,
       pageNumber: 1,
     },
     {
@@ -111,17 +111,13 @@ menuItems2();
 const toggleItem = async (item: MenuItem) => {
   // Create a deep copy of the menu items to trigger reactivity
   const updatedItems = JSON.parse(JSON.stringify(menuItems.value));
-  const currentId = Number(my_location.value);
+  // const currentId = Number(my_location.value);
 
   // Find and update the item in the tree
   const updateItemInTree = (items: MenuItem[]): boolean => {
     for (const menuItem of items) {
       if (menuItem.id === item.id) {
-        // Don't collapse if this is the current location
-        if (item.id === currentId && item.Open) {
-          return true; // Found but didn't change state
-        }
-
+        // Remove the condition that prevents collapsing
         menuItem.Open = !menuItem.Open;
         return true;
       }
@@ -137,12 +133,10 @@ const toggleItem = async (item: MenuItem) => {
   updateItemInTree(updatedItems);
   menuItems.value = updatedItems;
 
-  // If this is the current location and was already expanded, don't show a toggle message
-  if (!(item.id === currentId && item.Open)) {
-    toast(`${item.title} ${!item.Open ? "expanded" : "collapsed"}`, {
-      duration: 2000,
-    });
-  }
+  // Always show the toggle message
+  toast(`${item.title} ${!item.Open ? "expanded" : "collapsed"}`, {
+    duration: 2000,
+  });
 
   switch (item.contentType) {
     case "list_content":
@@ -156,6 +150,9 @@ const toggleItem = async (item: MenuItem) => {
     case "jump_url":
       router.push(`${item.url}`);
 
+      break;
+    case "cpta_aboutus":
+      router.push(`/page/${item.id}/${item.contentId}`);
       break;
   }
   // // Navigate to the page with the correct parameters
