@@ -29,12 +29,14 @@ const emit = defineEmits<{
     <SidebarMenuItem>
       <SidebarMenuButton @click="emit('toggle', item)" class="h-min">
         <div class="flex items-center">
-          <ChevronRight
-            v-if="item.children && item.children.length > 0"
-            class="text-sm transition-transform duration-200"
-            :size="16"
-            :class="{ 'rotate-90': item.Open }"
-          />
+          <div class="w-4 h-4">
+            <ChevronRight
+              v-if="item.children && item.children.length > 0"
+              class="text-sm transition-transform duration-200"
+              :size="16"
+              :class="{ 'rotate-90': item.Open }"
+            />
+          </div>
           <!-- <component :is="getIcon(item)" class="mr-2 w-4 h-4" /> -->
           <h1 class="">{{ item.title }}</h1>
         </div>

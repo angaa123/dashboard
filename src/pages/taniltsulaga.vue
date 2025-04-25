@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
 import { computed, ref, watch } from "vue";
+import { Dot } from "lucide-vue-next";
 import axios from "axios";
 import {
   Card,
@@ -167,7 +168,12 @@ watch(
         >
           <Card class="h-full">
             <CardHeader>
-              <CardTitle class="text-lg">{{ item.title }}</CardTitle>
+              <CardTitle class="text-lg"
+                >{{ item.title
+                }}<span class="text-sm text-orange-300"
+                  >({{ childrenMap[item.id].length }})</span
+                ></CardTitle
+              >
               <CardDescription>{{ item.intro }}</CardDescription>
             </CardHeader>
             <CardContent
@@ -176,8 +182,11 @@ watch(
               <div
                 v-for="child in childrenMap[item.id]"
                 :key="child.id"
-                class="text-sm mb-1"
+                class="text-sm mb-1 flex items-center gap-2"
               >
+                <div class="w-4 h-4">
+                  <Dot class="w-4 h-4" />
+                </div>
                 {{ child.title }}
               </div>
             </CardContent>
@@ -191,7 +200,12 @@ watch(
         >
           <Card class="h-full">
             <CardHeader>
-              <CardTitle class="text-lg">{{ item.title }}</CardTitle>
+              <CardTitle class="text-lg"
+                >{{ item.title
+                }}<span class="text-sm text-orange-300"
+                  >({{ childrenMap[item.id].length }})</span
+                ></CardTitle
+              >
               <CardDescription>{{ item.intro }}</CardDescription>
             </CardHeader>
             <CardContent
@@ -200,8 +214,11 @@ watch(
               <div
                 v-for="child in childrenMap[item.id]"
                 :key="child.id"
-                class="text-sm mb-1"
+                class="text-sm mb-1 flex items-center gap-2"
               >
+                <div class="w-4 h-4">
+                  <Dot class="w-4 h-4" />
+                </div>
                 {{ child.title }}
               </div>
             </CardContent>
@@ -209,38 +226,35 @@ watch(
         </a>
         <a
           v-if="item.contentType === 'cpta_aboutus'"
-          :href="`/page/${item.id}/${item.contentId}`"
+          :href="`/page/${item.id}/${item.listId}`"
           class="hover:scale-105 hover:shadow-lg transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
-          <div class="h-full p-4 rounded-xl border-b-2 border-gray-200">
-            <div
-              class="p-2"
-              v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
-            >
-              <h1 class="text-lg font-semibold">
-                {{ item.title }}
-                <span class="text-sm text-orange-300"
+          <Card class="h-full">
+            <CardHeader>
+              <CardTitle class="text-lg"
+                >{{ item.title
+                }}<span class="text-sm text-orange-300"
                   >({{ childrenMap[item.id].length }})</span
-                >
-              </h1>
-            </div>
-            <div v-else>
-              <h1 class="text-lg font-semibold">{{ item.title }}</h1>
-            </div>
-            <div
+                ></CardTitle
+              >
+              <CardDescription>{{ item.intro }}</CardDescription>
+            </CardHeader>
+            <CardContent
               v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
-              class="h-12 overflow-y-auto"
             >
-              <p
+              <div
                 v-for="child in childrenMap[item.id]"
                 :key="child.id"
-                class="text-sm mb-1"
+                class="text-sm mb-1 flex items-center gap-2"
               >
+                <div class="w-4 h-4">
+                  <Dot class="w-4 h-4" />
+                </div>
                 {{ child.title }}
-              </p>
-            </div>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </a>
       </template>
     </div>
