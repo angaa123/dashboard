@@ -20,7 +20,6 @@ const menuItems = ref<MenuItem[]>([]);
 //navigate to item
 const navigateToItem = (item: MenuItem) => {
   console.log("Navigating to item:", item);
-
   if (item.contentType === "single_content" && item.contentId) {
     router.push(`/${item.id}/${item.contentId}`);
   } else if (item.contentType === "list_content" && item.listId) {
@@ -38,7 +37,6 @@ const navigateToItem = (item: MenuItem) => {
     // router.push(`/item/${item.id}`);
   }
 };
-
 //filtered menu items
 const filteredMenuItems = computed(() => {
   return menuItems.value.filter((item) => item.pid === 0);
@@ -83,10 +81,7 @@ all_menuItems_fetch();
     <div class="container mx-auto">
       <div class="grid grid-cols-3 my-4 gap-2">
         <div v-for="item in filteredMenuItems" :key="item.id" class="mx-auto">
-          <button
-            class="text-center mx-auto h-12"
-            @click="navigateToItem(item)"
-          >
+          <button class="text-center mx-auto" @click="navigateToItem(item)">
             {{ item.title }}
           </button>
         </div>

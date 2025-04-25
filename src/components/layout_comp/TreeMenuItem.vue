@@ -31,7 +31,8 @@ const emit = defineEmits<{
         <div class="flex items-center">
           <ChevronRight
             v-if="item.children && item.children.length > 0"
-            class="font-bold transition-transform duration-200"
+            class="text-sm transition-transform duration-200"
+            :size="16"
             :class="{ 'rotate-90': item.Open }"
           />
           <!-- <component :is="getIcon(item)" class="mr-2 w-4 h-4" /> -->

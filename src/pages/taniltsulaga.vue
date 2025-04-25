@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from "vue-router";
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onMounted } from "vue";
 import axios from "axios";
 import {
   Card,
@@ -81,20 +81,64 @@ const titelData2 = async () => {
   titelData.value = response.data.data.list;
 };
 titelData2();
+//////////////
 
-const handleClick = async (item: TitelDataItem) => {
-  if (item.contentType === "single_content") {
-    // Navigate first
-    router.push(`/${item.id}/${item.contentId}`);
-    // Then reload the current page after navigation completes
-  } else if (item.contentType === "list_content") {
-    router.push(`/list/${item.id}/${item.listId}`);
-  } else if (item.contentType === "cpta_aboutus") {
-    router.push(`/page/${item.id}/${item.contentId}`);
-  } else {
-    console.log(item);
+// Map to store children for each parent item
+const childrenMap = ref<Record<number, TitelDataItem[]>>({});
+
+const loadChildrenForItem = async (parentId: number) => {
+  try {
+    const response = await axios.post(
+      `${import.meta.env.VITE_API_URL}/Task/WebPages`,
+      {
+        pageSize: 50,
+        pageNumber: 1,
+        FILTERS: [
+          {
+            COLUMN: "pid",
+            OPERATOR: "IS",
+            VALUE: parentId,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      }
+    );
+
+    childrenMap.value[parentId] = response.data.data.list;
+  } catch (error) {
+    console.error(`Error loading children for item ${parentId}:`, error);
+    childrenMap.value[parentId] = [];
   }
 };
+
+// Load children for a specific item when hovering
+const handleItemHover = async (item: TitelDataItem) => {
+  if (!childrenMap.value[item.id]) {
+    await loadChildrenForItem(item.id);
+  }
+};
+
+// Load children for all items
+const loadAllChildData = async () => {
+  for (const item of titelData.value) {
+    await loadChildrenForItem(item.id);
+  }
+};
+
+// Watch for when titelData is populated and load children for all items
+watch(
+  titelData,
+  async (newValue) => {
+    if (newValue.length > 0) {
+      await loadAllChildData();
+    }
+  },
+  { immediate: true }
+);
 
 // Watch for route parameter changes to refresh data
 watch(
@@ -103,6 +147,8 @@ watch(
     if (newContId !== oldContId || newTitelId !== oldTitelId) {
       getContent();
       titelData2();
+      // Reset children map when route changes
+      childrenMap.value = {};
     }
   },
   { immediate: true }
@@ -110,97 +156,84 @@ watch(
 </script>
 
 <template>
-  <div class="container mx-auto py-8 px-4 lg:px-32">
-    <div class="mb-8" v-if="content">
-      <Card class="mx-auto" :id="content.title">
-        <CardHeader>
-          <CardTitle class="text-3xl">{{ content.title }}</CardTitle>
-          <CardDescription>{{ content.intro }}</CardDescription>
-          <img
-            :src="
-              content.defaultAttachUrl &&
-              content.defaultAttachUrl.startsWith('http')
-                ? content.defaultAttachUrl
-                : (content.cdnUrl || '') + (content.defaultAttachUrl || '')
-            "
-            alt="content"
-            class="w-full h-auto rounded-md object-cover mt-4"
-          />
-        </CardHeader>
-        <CardContent class="prose h-full max-w-none">
-          <div
-            v-html="content.content"
-            class="text-gray-600 dark:text-gray-300 content prose max-w-none"
-          ></div>
-        </CardContent>
-        <CardFooter class="flex justify-between items-center">
-          <span class="text-sm text-muted-foreground">
-            {{ new Date(content.date).toLocaleDateString() }}
-          </span>
-        </CardFooter>
-      </Card>
-    </div>
-    <div v-else class="text-center w-full flex flex-col gap-4 py-8">
-      <div v-if="titelData.length > 0" class="flex flex-col gap-4">
-        <div
-          v-for="item in titelData"
-          :key="item.id"
-          class="hover:scale-105 w-full hover:shadow-lg transition-all bg-gray-300 border border-gray-950 rounded-md duration-300"
+  <section class="mt-12" v-if="titelData.length > 0">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <template v-for="item in titelData" :key="item.id">
+        <a
+          v-if="item.contentType === 'list_content'"
+          :href="`/list/${item.id}/${item.listId}`"
+          class="hover:scale-105 hover:shadow-lg transition-all duration-300"
+          @mouseenter="handleItemHover(item)"
         >
-          <div class="w-full p-4" @click="handleClick(item)">
-            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
-              {{ item.title }}
-            </h1>
+          <Card class="h-full">
+            <CardHeader>
+              <CardTitle class="text-lg">{{ item.title }}</CardTitle>
+              <CardDescription>{{ item.intro }}</CardDescription>
+            </CardHeader>
+            <CardContent
+              v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+            >
+              <div
+                v-for="child in childrenMap[item.id]"
+                :key="child.id"
+                class="text-sm mb-1"
+              >
+                {{ child.title }}
+              </div>
+            </CardContent>
+          </Card>
+        </a>
+        <a
+          v-if="item.contentType === 'single_content'"
+          :href="`/${item.id}/${item.contentId}`"
+          class="hover:scale-105 hover:shadow-lg transition-all duration-300"
+          @mouseenter="handleItemHover(item)"
+        >
+          <Card class="h-full">
+            <CardHeader>
+              <CardTitle class="text-lg">{{ item.title }}</CardTitle>
+              <CardDescription>{{ item.intro }}</CardDescription>
+            </CardHeader>
+            <CardContent
+              v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+            >
+              <div
+                v-for="child in childrenMap[item.id]"
+                :key="child.id"
+                class="text-sm mb-1"
+              >
+                {{ child.title }}
+              </div>
+            </CardContent>
+          </Card>
+        </a>
+        <a
+          v-if="item.contentType === 'cpta_aboutus'"
+          :href="`/page/${item.id}/${item.contentId}`"
+          class="hover:scale-105 hover:shadow-lg transition-all duration-300"
+          @mouseenter="handleItemHover(item)"
+        >
+          <div class="h-full p-4 rounded-xl border-b-2 border-gray-200">
+            <div class="p-2">
+              <h1 class="text-lg font-semibold">{{ item.title }}</h1>
+            </div>
+            <div
+              v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+              class="h-12 overflow-y-auto"
+            >
+              <p
+                v-for="child in childrenMap[item.id]"
+                :key="child.id"
+                class="text-sm mb-1"
+              >
+                {{ child.title }}
+              </p>
+            </div>
           </div>
-        </div>
-      </div>
+        </a>
+      </template>
     </div>
-
-    <section class="mt-12" v-if="titelData.length > 0">
-      <h1 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
-        Нийтлэлүүд
-      </h1>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <template v-for="item in titelData" :key="item.id">
-          <a
-            v-if="item.contentType === 'list_content'"
-            :href="`/list/${item.id}/${item.listId}`"
-            class="hover:scale-105 hover:shadow-lg transition-all duration-300"
-          >
-            <Card class="h-full">
-              <CardHeader>
-                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
-              </CardHeader>
-            </Card>
-          </a>
-          <a
-            v-if="item.contentType === 'single_content'"
-            :href="`/${item.id}/${item.contentId}`"
-            class="hover:scale-105 hover:shadow-lg transition-all duration-300"
-          >
-            <Card class="h-full">
-              <CardHeader>
-                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <CardDescription>{{ item.intro }}</CardDescription>
-              </CardHeader>
-            </Card>
-          </a>
-          <a
-            v-if="item.contentType === 'cpta_aboutus'"
-            :href="`/page/${item.id}/${item.contentId}`"
-          >
-            <Card class="h-full">
-              <CardHeader>
-                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <CardDescription>{{ item.intro }}</CardDescription>
-              </CardHeader>
-            </Card>
-          </a>
-        </template>
-      </div>
-    </section>
-  </div>
+  </section>
 </template>
 
 <style scoped>

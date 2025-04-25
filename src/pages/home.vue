@@ -61,8 +61,19 @@ all_menuItems_fetch();
 //search
 const { search, onFinalSearch } = useSearch();
 
+// Debounce function
+const debounce = (fn: Function, delay: number) => {
+  let timeout: number | undefined;
+  return (...args: any[]) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+};
+
 const handleSearch = async () => {
-  if (!search.value.trim()) {
+  const trimmedSearch = search.value.trim();
+
+  if (!trimmedSearch || trimmedSearch.length < 3) {
     isSearching.value = false;
     searchResults.value = [];
     searchResults_titels.value = [];
@@ -74,6 +85,9 @@ const handleSearch = async () => {
   searchResults.value = result.unique_arr || [];
   searchResults_titels.value = result.titelsResults_arr || [];
 };
+
+// Debounced search function with 500ms delay
+const debouncedSearch = debounce(handleSearch, 500);
 
 const navigateToItem = (item: MenuItem) => {
   if (item.contentType === "single_content") {
@@ -134,8 +148,7 @@ const navigateToItem_content = async (item: MenuItem) => {
         placeholder="Search help articles"
         v-model="search"
         class="w-full h-full bg-none rounded-md focus:outline-none"
-        @input="handleSearch"
-        @change="handleSearch"
+        @input="debouncedSearch"
       />
       <div class="flex m-3 items-center justify-center">
         <Search name="mdi:search" class="text-gray-500 flex" />
@@ -179,8 +192,13 @@ const navigateToItem_content = async (item: MenuItem) => {
       </div>
 
       <!-- No results message -->
+      <div v-if="search.length < 3">та 3-аас илүү тэмдэгт оруулна уу.</div>
       <div
-        v-if="searchResults.length === 0 && searchResults_titels.length === 0"
+        v-if="
+          search.length > 3 &&
+          searchResults.length === 0 &&
+          searchResults_titels.length === 0
+        "
         class="text-center py-4"
       >
         "{{ search }}" байхгүй байна
@@ -194,88 +212,85 @@ const navigateToItem_content = async (item: MenuItem) => {
     >
       <div v-for="item in filteredMenuItems" :key="item.id" class="w-full">
         <template v-if="item.contentType === 'single_content'">
-          <a class="w-full" :href="`/${item.id}/${item.contentId}`">
-            <Card v-if="item" class="mx-auto">
-              <CardHeader>
-                <div class="w-20 m-auto h-20">
-                  <img
-                    :src="
-                      item.defaultAttachUrl &&
-                      item.defaultAttachUrl.startsWith('http')
-                        ? item.defaultAttachUrl
-                        : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-                    "
-                    alt="content"
-                    class="w-full h-full"
-                  />
-                </div>
-                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <CardDescription>{{ item.intro }}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  v-html="item.content"
-                  class="text-gray-600 dark:text-gray-300"
-                ></div>
-              </CardContent>
-            </Card>
-          </a>
+          <div class="border-2 rounded-xl">
+            <a class="w-full" :href="`/${item.id}/${item.contentId}`">
+              <Card v-if="item" class="mx-auto">
+                <CardHeader>
+                  <div class="w-20 m-auto h-20">
+                    <img
+                      :src="
+                        item.defaultAttachUrl &&
+                        item.defaultAttachUrl.startsWith('http')
+                          ? item.defaultAttachUrl
+                          : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                      "
+                      alt="content"
+                      class="w-full h-full"
+                    />
+                  </div>
+                  <CardTitle class="text-xl">{{ item.title }}</CardTitle>
+                  <CardDescription>{{ item.intro }}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div v-html="item.content" class="text-gray-600"></div>
+                </CardContent>
+              </Card>
+            </a>
+          </div>
         </template>
         <template v-else-if="item.contentType === 'list_content'">
-          <a class="w-full" :href="`/list/${item.id}/${item.listId}`">
-            <Card v-if="item" class="mx-auto">
-              <CardHeader>
-                <div class="w-20 m-auto h-20">
-                  <img
-                    :src="
-                      item.defaultAttachUrl &&
-                      item.defaultAttachUrl.startsWith('http')
-                        ? item.defaultAttachUrl
-                        : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-                    "
-                    alt="content"
-                    class="w-full h-full"
-                  />
-                </div>
-                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <CardDescription>{{ item.intro }}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div
-                  v-html="item.content"
-                  class="text-gray-600 dark:text-gray-300"
-                ></div>
-              </CardContent>
-            </Card>
-          </a>
+          <div class="border-2 rounded-xl">
+            <a class="w-full" :href="`/list/${item.id}/${item.listId}`">
+              <Card v-if="item" class="mx-auto">
+                <CardHeader>
+                  <div class="w-20 m-auto h-20">
+                    <img
+                      :src="
+                        item.defaultAttachUrl &&
+                        item.defaultAttachUrl.startsWith('http')
+                          ? item.defaultAttachUrl
+                          : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                      "
+                      alt="content"
+                      class="w-full h-full"
+                    />
+                  </div>
+                  <CardTitle class="text-xl">{{ item.title }}</CardTitle>
+                  <CardDescription>{{ item.intro }}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div v-html="item.content" class="text-gray-600"></div>
+                </CardContent>
+              </Card>
+            </a>
+          </div>
         </template>
         <template v-else>
-          <a class="w-full" :href="`/page/${item.id}/${item.contentId}`">
-            <Card v-if="item" class="mx-auto">
-              <CardHeader>
-                <div class="w-20 m-auto h-20">
-                  <img
-                    :src="
-                      item.defaultAttachUrl &&
-                      item.defaultAttachUrl.startsWith('http')
-                        ? item.defaultAttachUrl
-                        : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
-                    "
-                    alt="content"
-                    class="w-full h-full"
-                  />
-                </div>
-                <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
-              </CardHeader>
-              <CardContent>
-                <div
-                  v-html="item.content"
-                  class="text-gray-600 dark:text-gray-300"
-                ></div>
-              </CardContent>
-            </Card>
-          </a>
+          <div class="border-2 rounded-xl">
+            <a class="w-full" :href="`/page/${item.id}/${item.contentId}`">
+              <Card v-if="item" class="mx-auto">
+                <CardHeader>
+                  <div class="w-20 m-auto h-20">
+                    <img
+                      :src="
+                        item.defaultAttachUrl &&
+                        item.defaultAttachUrl.startsWith('http')
+                          ? item.defaultAttachUrl
+                          : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
+                      "
+                      alt="content"
+                      class="w-full h-full"
+                    />
+                  </div>
+                  <CardTitle class="text-xl">{{ item.title }}</CardTitle>
+                  <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
+                </CardHeader>
+                <CardContent>
+                  <div v-html="item.content" class="text-gray-600"></div>
+                </CardContent>
+              </Card>
+            </a>
+          </div>
         </template>
       </div>
     </div>

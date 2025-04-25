@@ -128,7 +128,7 @@ watch(
         <CardContent>
           <div
             v-html="content.content"
-            class="text-gray-600 dark:text-gray-300 content prose max-w-none"
+            class="text-gray-600 content prose max-w-none"
           ></div>
         </CardContent>
         <CardFooter class="flex justify-between items-center">
@@ -143,10 +143,10 @@ watch(
         <div
           v-for="item in titelData"
           :key="item.id"
-          class="hover:scale-105 w-full hover:shadow-lg transition-all bg-gray-300 border border-gray-950 rounded-md duration-300"
+          class="hover:scale-105 w-full hover:shadow-lg transition-all bg-gray-100 border border-gray-950 rounded-md duration-300"
         >
           <div class="w-full p-4" @click="handleClick(item)">
-            <h1 class="text-xl font-semibold text-gray-800 dark:text-gray-200">
+            <h1 class="text-xl font-semibold text-gray-800">
               {{ item.title }}
             </h1>
           </div>
@@ -155,9 +155,7 @@ watch(
     </div>
 
     <section class="mt-12" v-if="titelData.length > 0">
-      <h1 class="text-2xl font-semibold mb-6 text-gray-800 dark:text-gray-200">
-        Нийтлэлүүд
-      </h1>
+      <h1 class="text-2xl font-semibold mb-6 text-gray-800 0">Нийтлэлүүд</h1>
       <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
         <template v-for="item in titelData" :key="item.id">
           <a

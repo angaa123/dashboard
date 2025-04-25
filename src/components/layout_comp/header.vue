@@ -22,8 +22,19 @@ const hideDropdown = () => {
   }, 200);
 };
 
+// Debounce function
+const debounce = (fn: Function, delay: number) => {
+  let timeout: number | undefined;
+  return (...args: any[]) => {
+    if (timeout) clearTimeout(timeout);
+    timeout = setTimeout(() => fn(...args), delay);
+  };
+};
+
 const handleSearch = async () => {
-  if (!search.value.trim()) {
+  const trimmedSearch = search.value.trim();
+
+  if (!trimmedSearch || trimmedSearch.length < 3) {
     isSearching.value = false;
     searchResults.value = [];
     searchResults_titels.value = [];
@@ -37,6 +48,9 @@ const handleSearch = async () => {
   searchResults_titels.value = result.titelsResults_arr || [];
   showDropdown.value = true;
 };
+
+// Debounced search function with 500ms delay
+const debouncedSearch = debounce(handleSearch, 500);
 
 const navigateToItem = (item: any) => {
   showDropdown.value = false;
@@ -107,8 +121,10 @@ const navigateToItem_content = async (item: any) => {
             type="text"
             placeholder="Хайх"
             v-model="search"
-            @input="handleSearch"
-            @focus="search.trim() && (showDropdown = true)"
+            @input="debouncedSearch"
+            @focus="
+              search.trim() && search.length >= 3 && (showDropdown = true)
+            "
             @blur="hideDropdown"
             class="w-full h-10 mx-4 focus:outline-none"
           />
@@ -119,8 +135,19 @@ const navigateToItem_content = async (item: any) => {
             v-if="showDropdown && isSearching && search.trim()"
             class="absolute top-full left-0 right-0 mt-1 bg-white border rounded-md shadow-lg max-h-96 overflow-y-auto z-50"
           >
+            <!-- Message for less than 3 characters -->
+            <div
+              v-if="search.length < 3"
+              class="text-center py-4 text-gray-500"
+            >
+              та 3-аас илүү тэмдэгт оруулна уу.
+            </div>
+
             <!-- Results from title search -->
-            <div v-if="searchResults_titels.length > 0" class="p-2 border-b">
+            <div
+              v-else-if="searchResults_titels.length > 0"
+              class="p-2 border-b"
+            >
               <h3 class="text-sm font-medium text-gray-700 px-2 py-1">
                 Гарчигууд
               </h3>
@@ -138,7 +165,10 @@ const navigateToItem_content = async (item: any) => {
             </div>
 
             <!-- Results from content search -->
-            <div v-if="searchResults.length > 0" class="p-2">
+            <div
+              v-if="search.length >= 3 && searchResults.length > 0"
+              class="p-2"
+            >
               <h3 class="text-sm font-medium text-gray-700 px-2 py-1">
                 Мэдээлэл
               </h3>
@@ -158,11 +188,13 @@ const navigateToItem_content = async (item: any) => {
             <!-- No results message -->
             <div
               v-if="
-                searchResults.length === 0 && searchResults_titels.length === 0
+                search.length >= 3 &&
+                searchResults.length === 0 &&
+                searchResults_titels.length === 0
               "
               class="text-center py-4 text-gray-500"
             >
-              No results found for "{{ search }}"
+              "{{ search }}" байхгүй байна
             </div>
           </div>
         </div>

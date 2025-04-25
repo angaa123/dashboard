@@ -72,6 +72,12 @@ const fetchList = async () => {
 };
 
 // Function to scroll to element based on URL hash
+interface SelectedTitel {
+  id: string;
+  title: string;
+}
+
+const selectedTitel = ref<SelectedTitel | null>(null);
 const scrollToHashElement = () => {
   if (window.location.hash) {
     const id = decodeURIComponent(window.location.hash.substring(1));
@@ -83,7 +89,11 @@ const scrollToHashElement = () => {
 };
 
 // Function to handle anchor clicks with smooth scrolling
-const handleAnchorClick = (event: Event, itemTitle: string) => {
+const handleAnchorClick = (
+  event: Event,
+  itemTitle: string,
+  itemId: number | string
+) => {
   event.preventDefault();
   const element = document.getElementById(itemTitle);
   if (element) {
@@ -92,6 +102,7 @@ const handleAnchorClick = (event: Event, itemTitle: string) => {
     // Smooth scroll to element
     element.scrollIntoView({ behavior: "smooth" });
   }
+  selectedTitel.value = { id: String(itemId), title: itemTitle };
 };
 
 fetchList();
@@ -144,7 +155,7 @@ watch(
 
 <template>
   <div class="container py-8 xl:px-20">
-    <h1 class="text-4xl text-center md:text-4xl font-bold mb-8">
+    <h1 class="text-3xl text-center font-bold mb-8">
       {{ main_title[0].title }}
     </h1>
     <div
@@ -157,12 +168,10 @@ watch(
         class="w-full h-auto"
       />
     </div>
-    <p
-      class="text-gray-800 pb-8 text-xl md:text-2xl dark:text-gray-300 text-center"
-    >
+    <p class="text-gray-800 pb-8 text-xl md:text-xl 0 text-center">
       {{ main_title[0].intro }}
     </p>
-    <div class="gap-6 flex relative">
+    <div class="gap-6 flex relativ border-t-2">
       <div class="w-full flex flex-col gap-4 xl:w-5/6">
         <Card
           v-for="item in list"
@@ -171,7 +180,7 @@ watch(
           class="card-content"
         >
           <CardHeader>
-            <CardTitle class="text-3xl">{{ item.title }}</CardTitle>
+            <CardTitle class="text-2xl">{{ item.title }}</CardTitle>
             <CardDescription>{{ item.intro }}</CardDescription>
             <div v-if="item.defaultAttachUrl">
               <img
@@ -187,20 +196,17 @@ watch(
             </div>
           </CardHeader>
           <CardContent>
-            <div
-              v-html="item.content"
-              class="text-gray-600 dark:text-gray-300 content"
-            ></div>
+            <div v-html="item.content" class="text-gray-600 content"></div>
           </CardContent>
-          <CardFooter class="flex justify-between items-center">
+          <!-- <CardFooter class="flex justify-between items-center">
             <span class="text-sm text-muted-foreground">
               {{ new Date(item.date).toLocaleDateString() }}
             </span>
-          </CardFooter>
+          </CardFooter> -->
         </Card>
       </div>
       <div
-        class="hidden w-1/6 bg-gray-100 p-2 rounded-lg md:flex flex-col gap-4 fixed top-24 right-8 shadow-lg"
+        class="hidden w-1/6 p-2 rounded-lg md:flex flex-col gap-4 fixed top-24 right-8 shadow-lg"
       >
         <div
           v-for="item in list"
@@ -209,8 +215,11 @@ watch(
         >
           <a
             href="#"
-            @click="(e) => handleAnchorClick(e, item.title)"
-            class="text-gray-600 dark:text-gray-300"
+            @click="(e) => handleAnchorClick(e, item.title, item.id)"
+            class="text-gray-600"
+            :class="{
+              'font-bold text-black ': selectedTitel?.id === String(item.id),
+            }"
             >{{ item.title }}</a
           >
         </div>
@@ -218,9 +227,6 @@ watch(
     </div>
 
     <section class="mt-8" v-if="titelData.length > 0">
-      <h1 class="text-2xl font-semibold text-gray-600 dark:text-gray-300">
-        Нийтлэлүүд
-      </h1>
       <div
         v-for="item in titelData"
         :key="item.id"

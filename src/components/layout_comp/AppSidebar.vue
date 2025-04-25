@@ -177,15 +177,13 @@ watch(
     <SidebarContent>
       <SidebarGroup>
         <SidebarHeader>
-          <h1 class="text-xl mt-16 font-bold">
-            GoSmart iin butegdhuuniig heregleh zaavar
-          </h1>
+          <h1 class="text-xl mt-16 font-bold">Гарын авлага</h1>
           <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->
         </SidebarHeader>
         <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->
         <SidebarGroupContent>
           <SidebarMenu>
-            <div class="tree-sidebar flex flex-col w-full">
+            <div class="tree-sidebar flex flex-col w-full h-full">
               <TreeMenuItem
                 v-for="item in menuItems"
                 :key="item.id"
