@@ -163,7 +163,7 @@ watch(
         <a
           v-if="item.contentType === 'list_content'"
           :href="`/list/${item.id}/${item.listId}`"
-          class="hover:scale-105 hover:shadow-lg rounded-lg transition-all duration-300"
+          class="hover:scale-105 hover:shadow-lg rounded-xl transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
           <Card class="group">
@@ -198,7 +198,7 @@ watch(
         <a
           v-if="item.contentType === 'single_content'"
           :href="`/${item.id}/${item.contentId}`"
-          class="hover:scale-105 hover:shadow-lg rounded-lg transition-all duration-300"
+          class="hover:scale-105 hover:shadow-lg rounded-xl transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
           <Card class="h-full group">
@@ -233,7 +233,7 @@ watch(
         <a
           v-if="item.contentType === 'cpta_aboutus'"
           :href="`/page/${item.id}/${item.listId}`"
-          class="hover:scale-105 hover:shadow-lg rounded-lg transition-all duration-300"
+          class="hover:scale-105 hover:shadow-lg rounded-xl transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
           <Card class="h-full group">
