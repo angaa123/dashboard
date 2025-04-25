@@ -170,7 +170,9 @@ watch(
             <CardHeader>
               <CardTitle class="text-lg"
                 >{{ item.title
-                }}<span class="text-sm text-orange-300"
+                }}<span
+                  class="text-sm text-orange-300"
+                  v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
                   >({{ childrenMap[item.id].length }})</span
                 ></CardTitle
               >
@@ -178,6 +180,7 @@ watch(
             </CardHeader>
             <CardContent
               v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+              class="max-h-20 overflow-y-auto group-hover:block hidden"
             >
               <div
                 v-for="child in childrenMap[item.id]"
@@ -202,7 +205,9 @@ watch(
             <CardHeader>
               <CardTitle class="text-lg"
                 >{{ item.title
-                }}<span class="text-sm text-orange-300"
+                }}<span
+                  class="text-sm text-orange-300"
+                  v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
                   >({{ childrenMap[item.id].length }})</span
                 ></CardTitle
               >
@@ -210,6 +215,7 @@ watch(
             </CardHeader>
             <CardContent
               v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+              class="max-h-20 overflow-y-auto group-hover:block hidden"
             >
               <div
                 v-for="child in childrenMap[item.id]"
@@ -234,7 +240,9 @@ watch(
             <CardHeader>
               <CardTitle class="text-lg"
                 >{{ item.title
-                }}<span class="text-sm text-orange-300"
+                }}<span
+                  v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+                  class="text-sm text-orange-300"
                   >({{ childrenMap[item.id].length }})</span
                 ></CardTitle
               >
@@ -242,6 +250,7 @@ watch(
             </CardHeader>
             <CardContent
               v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+              class="max-h-20 overflow-y-auto group-hover:block hidden"
             >
               <div
                 v-for="child in childrenMap[item.id]"
