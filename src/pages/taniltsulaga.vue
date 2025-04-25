@@ -166,7 +166,7 @@ watch(
           class="hover:scale-105 hover:shadow-lg transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
-          <Card class="h-full">
+          <Card class="h-full group">
             <CardHeader>
               <CardTitle class="text-lg"
                 >{{ item.title
@@ -201,7 +201,7 @@ watch(
           class="hover:scale-105 hover:shadow-lg transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
-          <Card class="h-full">
+          <Card class="h-full group">
             <CardHeader>
               <CardTitle class="text-lg"
                 >{{ item.title
@@ -236,7 +236,7 @@ watch(
           class="hover:scale-105 hover:shadow-lg transition-all duration-300"
           @mouseenter="handleItemHover(item)"
         >
-          <Card class="h-full">
+          <Card class="h-full group">
             <CardHeader>
               <CardTitle class="text-lg"
                 >{{ item.title
