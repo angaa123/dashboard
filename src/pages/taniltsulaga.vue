@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { useRoute, useRouter } from "vue-router";
-import { computed, ref, watch, onMounted } from "vue";
+import { useRoute } from "vue-router";
+import { computed, ref, watch } from "vue";
 import axios from "axios";
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
+  // CardFooter,
   CardHeader,
   // CardImage,
   CardTitle,
@@ -25,7 +25,7 @@ interface TitelDataItem {
 }
 
 const route = useRoute();
-const router = useRouter();
+// const router = useRouter();
 const cont_id = computed(() => route.params.cont_id);
 const titel_id = computed(() => route.params.titel_id);
 const content = ref<MockListItem | undefined>(undefined);
