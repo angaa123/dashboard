@@ -214,7 +214,18 @@ watch(
           @mouseenter="handleItemHover(item)"
         >
           <div class="h-full p-4 rounded-xl border-b-2 border-gray-200">
-            <div class="p-2">
+            <div
+              class="p-2"
+              v-if="childrenMap[item.id] && childrenMap[item.id].length > 0"
+            >
+              <h1 class="text-lg font-semibold">
+                {{ item.title }}
+                <span class="text-sm text-orange-300"
+                  >({{ childrenMap[item.id].length }})</span
+                >
+              </h1>
+            </div>
+            <div v-else>
               <h1 class="text-lg font-semibold">{{ item.title }}</h1>
             </div>
             <div
