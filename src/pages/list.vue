@@ -226,28 +226,49 @@ watch(
       </div>
     </div>
 
-    <section class="mt-8" v-if="titelData.length > 0">
-      <div
-        v-for="item in titelData"
-        :key="item.id"
-        class="grid grid-cols-2 md:grid-cols-3 gap-4"
-      >
+    <section
+      class="mt-8 grid grid-cols-2 md:grid-cols-3 gap-4"
+      v-if="titelData.length > 0"
+    >
+      <div v-for="item in titelData" :key="item.id" class="">
         <a
           v-if="item.contentType === 'list_content'"
           :href="`/list/${item.id}/${item.listId}`"
-          class="hover:scale-102 hover:shadow-lg transition-all duration-300"
+          class="hover:scale-102 transition-all duration-300"
         >
-          <Card>
+          <Card class="h-full group">
             <CardHeader>
-              <CardTitle class="">{{ item.title }}</CardTitle>
+              <CardTitle class="text-lg"
+                >{{ item.title
+                }}<span
+                  v-if="item[item.id] && item[item.id].length > 0"
+                  class="text-sm text-orange-300"
+                  >({{ item[item.id].length }})</span
+                ></CardTitle
+              >
               <CardDescription>{{ item.intro }}</CardDescription>
             </CardHeader>
+            <CardContent
+              v-if="item[item.id] && item[item.id].length > 0"
+              class="max-h-20 overflow-y-auto group-hover:block hidden"
+            >
+              <div
+                v-for="child in item[item.id]"
+                :key="child.id"
+                class="text-sm mb-1 flex items-center gap-2"
+              >
+                <div class="w-4 h-4">
+                  <Dot class="w-4 h-4" />
+                </div>
+                {{ child.title }}
+              </div>
+            </CardContent>
           </Card>
         </a>
         <a
           v-if="item.contentType === 'single_content'"
           :href="`/${item.id}/${item.contentId}`"
-          class="hover:scale-102 hover:shadow-lg transition-all duration-300"
+          class="hover:scale-102 transition-all duration-300"
         >
           <Card>
             <CardHeader>
