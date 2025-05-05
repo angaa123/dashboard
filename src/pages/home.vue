@@ -72,10 +72,7 @@ all_menuItems_fetch();
   <div
     class="container mx-auto flex flex-col items-center justify-center mb-12"
   >
-    <h1
-      class="text-center text-6xl mt-32 font-adineue"
-      style="font-family: 'adineue PRO KZ Bold'"
-    >
+    <h1 class="text-center text-6xl mt-32 font-adineue font-bold">
       Гарын авлага
     </h1>
     <p class="text-center my-4 font-semibold text-xl max-w-[452px] text-wrap-2">
@@ -85,8 +82,7 @@ all_menuItems_fetch();
 
     <button
       @click="openSearchModal"
-      class="text-gray-600 hover:text-gray-900 flex justify-centerb my-4 px-4 py-3 flex-row justify-between rounded-md border-1 border-gray-300 w-1/2 items-center hover:cursor-pointer"
-      style="font-family: 'Gilroy-SemiBold'"
+      class="text-gray-600 hover:text-gray-900 flex justify-centerb my-4 px-4 py-3 flex-row justify-between rounded-md border-1 border-gray-300 w-1/2 items-center hover:cursor-pointer font-semibold"
     >
       <p class="text-gray-600">хайх</p>
       <Search class="h-6 w-6" />
@@ -100,7 +96,7 @@ all_menuItems_fetch();
           <div class="border-1 rounded-xl">
             <a class="w-full" :href="`/${item.id}/${item.contentId}`">
               <Card v-if="item" class="mx-auto">
-                <CardHeader class="flex flex-row gap-4 px-[20px]">
+                <CardHeader class="flex flex-row gap-6 p-5">
                   <div class="w-20 h-20">
                     <img
                       :src="
@@ -114,17 +110,11 @@ all_menuItems_fetch();
                     />
                   </div>
                   <span class="flex flex-col">
-                    <span
-                      class="text-sm font-bold"
-                      style="font-family: 'Gilroy-SemiBold'"
-                    >
+                    <span class="text-sm font-bold">
                       {{ item.title }}
                     </span>
                     &nbsp;
-                    <span
-                      class="text-sm text-gray-600"
-                      style="font-family: 'Gilroy-Medium'"
-                    >
+                    <span class="text-sm text-gray-600">
                       {{ item.intro }}
                     </span>
                   </span>
@@ -136,8 +126,8 @@ all_menuItems_fetch();
         <template v-else-if="item.contentType === 'list_content'">
           <div class="border-1 rounded-xl">
             <a class="w-full" :href="`/list/${item.id}/${item.listId}`">
-              <Card v-if="item" class="mx-auto py-[20px]">
-                <CardHeader class="flex flex-row gap-4 px-[20px]">
+              <Card v-if="item" class="mx-auto p-5">
+                <CardHeader class="flex flex-row gap-6 px-5">
                   <div class="w-20 h-20">
                     <img
                       :src="
@@ -151,17 +141,9 @@ all_menuItems_fetch();
                     />
                   </div>
                   <span class="flex flex-col">
-                    <span
-                      class="text-sm font-bold"
-                      style="font-family: 'Gilroy-SemiBold'"
-                      >{{ item.title }}</span
-                    >
+                    <span class="text-sm font-bold">{{ item.title }}</span>
                     &nbsp;
-                    <span
-                      class="text-sm text-gray-600"
-                      style="font-family: 'Gilroy-Medium'"
-                      >{{ item.intro }}</span
-                    >
+                    <span class="text-sm text-gray-600">{{ item.intro }}</span>
                   </span>
                 </CardHeader>
               </Card>
@@ -171,9 +153,9 @@ all_menuItems_fetch();
         <template v-else>
           <div class="border-1 rounded-xl">
             <a class="w-full" :href="`/page/${item.id}/${item.contentId}`">
-              <Card v-if="item" class="mx-auto py-[20px]">
-                <CardHeader class="flex flex-row gap-4 px-[20px]">
-                  <div class="aspect-square w-[50px] h-[50px]">
+              <Card v-if="item" class="mx-auto p-5">
+                <CardHeader class="flex flex-row gap-6 px-5">
+                  <div class="aspect-square w-12 h-12">
                     <img
                       :src="
                         item.defaultAttachUrl &&
@@ -186,17 +168,11 @@ all_menuItems_fetch();
                     />
                   </div>
                   <span class="line-clamp-2">
-                    <span
-                      class="text-sm font-bold"
-                      style="font-family: 'Gilroy-SemiBold'"
-                    >
+                    <span class="text-sm font-bold">
                       {{ item.title }}
                     </span>
                     &nbsp;
-                    <span
-                      class="text-sm text-gray-600"
-                      style="font-family: 'Gilroy-Medium'"
-                    >
+                    <span class="text-sm text-gray-600">
                       {{ item.intro }}
                     </span>
                   </span>
