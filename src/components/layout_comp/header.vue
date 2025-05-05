@@ -28,12 +28,26 @@ function closeSearchModal() {
         </a>
         <Search1 :is-open="isSearchOpen" @close="closeSearchModal" />
         <!-- Navigation links can be added here -->
+        <nav class="block md:hidden">
+          <button
+            @click="openSearchModal"
+            class="text-gray-600 hover:text-gray-900 p-2 rounded-md border-1 border-gray-300 flex flex-row items-center justify-between"
+          >
+            <Search class="h-6 w-6" />
+          </button>
+        </nav>
         <nav class="hidden md:flex space-x-8">
           <!-- Placeholder for nav items -->
           <button
             @click="openSearchModal"
-            class="text-gray-600 hover:text-gray-900"
+            class="text-gray-600 hover:text-gray-900 p-2 rounded-md border-1 border-gray-300 flex flex-row items-center w-[300px] justify-between"
           >
+            <p
+              class="text-gray-600 hover:text-gray-900"
+              style="font-family: 'Gilroy-SemiBold'"
+            >
+              хайх
+            </p>
             <Search class="h-6 w-6" />
           </button>
         </nav>

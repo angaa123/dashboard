@@ -91,7 +91,7 @@ const menuItems2 = async () => {
   const response = await axios.post(
     `${import.meta.env.VITE_API_URL}/Task/WebPages`,
     {
-      pageSize: 100,
+      pageSize: 5000,
       pageNumber: 1,
     },
     {
@@ -177,7 +177,7 @@ watch(
     <SidebarContent>
       <SidebarGroup>
         <SidebarHeader>
-          <h1 class="text-xl mt-16 font-bold">Гарын авлага</h1>
+          <h1 class="text-xl font-bold">Гарын авлага</h1>
           <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->
         </SidebarHeader>
         <!-- <SidebarGroupLabel>Navigation</SidebarGroupLabel> -->

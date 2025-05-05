@@ -87,7 +87,7 @@ provideSidebarContext({
         '--sidebar-width': SIDEBAR_WIDTH,
         '--sidebar-width-icon': SIDEBAR_WIDTH_ICON,
       }"
-      class="bg-white lg:ml-10"
+      class="bg-white"
       :class="
         cn(
           'group/sidebar-wrapper has-data-[variant=inset]:bg-sidebar flex min-h-svh w-full',

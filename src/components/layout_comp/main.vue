@@ -13,7 +13,7 @@ import Footer from "@/components/layout_comp/fooder.vue";
 
 <template>
   <div
-    class="w-full min-h-screen mt-16 md:mt-20 md:ml-4 md:mr-4 flex flex-col justify-between gap-4"
+    class="w-full min-h-screen mt-16 md:mt-20 md:ml-4 flex flex-col justify-between gap-4"
   >
     <RouterView />
     <!-- <div

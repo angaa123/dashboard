@@ -52,10 +52,9 @@ verifyToken();
     <Header />
     <SidebarProvider>
       <AppSidebar />
-      <main class="lg:ml-6">
+      <main class="lg:ml-10">
         <SidebarTrigger />
       </main>
-      <div class="flex flex-col gap-4"></div>
       <Main />
       <Sonner position="top-right" />
     </SidebarProvider>

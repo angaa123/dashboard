@@ -69,26 +69,39 @@ all_menuItems_fetch();
 </script>
 
 <template>
-  <div class="container mx-auto flex flex-col items-center justify-center">
-    <h1 class="text-center text-4xl font-bold my-4">Гарын авлага</h1>
-    <p class="text-center text-gray-600">
-      Attio-ийн бүх зүйлийн талаархи нийтлэг асуултуудын хариултыг аваарай
+  <div
+    class="container mx-auto flex flex-col items-center justify-center mb-12"
+  >
+    <h1
+      class="text-center text-6xl mt-32 font-adineue"
+      style="font-family: 'adineue PRO KZ Bold'"
+    >
+      Гарын авлага
+    </h1>
+    <p class="text-center my-4 font-semibold text-xl max-w-[452px] text-wrap-2">
+      GOSmart-ийн бүх зүйлийн талаар нийтлэг асуултуудын хариултыг аваарай
     </p>
     <Search1 :is-open="isSearchOpen" @close="closeSearchModal" />
-    <button @click="openSearchModal" class="text-gray-600 hover:text-gray-900">
+
+    <button
+      @click="openSearchModal"
+      class="text-gray-600 hover:text-gray-900 flex justify-centerb my-4 px-4 py-3 flex-row justify-between rounded-md border-1 border-gray-300 w-1/2 items-center hover:cursor-pointer"
+      style="font-family: 'Gilroy-SemiBold'"
+    >
+      <p class="text-gray-600">хайх</p>
       <Search class="h-6 w-6" />
     </button>
     <!-- Regular content display when not searching -->
     <div
-      class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mt-6 lg:px-32 px-4"
+      class="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mt-6 xl:px-32 px-4 lg:mt-20 gap-y-3"
     >
       <div v-for="item in filteredMenuItems" :key="item.id" class="w-full">
         <template v-if="item.contentType === 'single_content'">
-          <div class="border-2 rounded-xl">
+          <div class="border-1 rounded-xl">
             <a class="w-full" :href="`/${item.id}/${item.contentId}`">
               <Card v-if="item" class="mx-auto">
-                <CardHeader>
-                  <div class="w-20 m-auto h-20">
+                <CardHeader class="flex flex-row gap-4 px-[20px]">
+                  <div class="w-20 h-20">
                     <img
                       :src="
                         item.defaultAttachUrl &&
@@ -97,25 +110,35 @@ all_menuItems_fetch();
                           : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
                       "
                       alt="content"
-                      class="w-full h-full"
+                      class="aspect-square w-full h-full"
                     />
                   </div>
-                  <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                  <CardDescription>{{ item.intro }}</CardDescription>
+                  <span class="flex flex-col">
+                    <span
+                      class="text-sm font-bold"
+                      style="font-family: 'Gilroy-SemiBold'"
+                    >
+                      {{ item.title }}
+                    </span>
+                    &nbsp;
+                    <span
+                      class="text-sm text-gray-600"
+                      style="font-family: 'Gilroy-Medium'"
+                    >
+                      {{ item.intro }}
+                    </span>
+                  </span>
                 </CardHeader>
-                <CardContent>
-                  <div v-html="item.content" class="text-gray-600"></div>
-                </CardContent>
               </Card>
             </a>
           </div>
         </template>
         <template v-else-if="item.contentType === 'list_content'">
-          <div class="border-2 rounded-xl">
+          <div class="border-1 rounded-xl">
             <a class="w-full" :href="`/list/${item.id}/${item.listId}`">
-              <Card v-if="item" class="mx-auto">
-                <CardHeader>
-                  <div class="w-20 m-auto h-20">
+              <Card v-if="item" class="mx-auto py-[20px]">
+                <CardHeader class="flex flex-row gap-4 px-[20px]">
+                  <div class="w-20 h-20">
                     <img
                       :src="
                         item.defaultAttachUrl &&
@@ -124,25 +147,33 @@ all_menuItems_fetch();
                           : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
                       "
                       alt="content"
-                      class="w-full h-full"
+                      class="aspect-square w-full h-full"
                     />
                   </div>
-                  <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                  <CardDescription>{{ item.intro }}</CardDescription>
+                  <span class="flex flex-col">
+                    <span
+                      class="text-sm font-bold"
+                      style="font-family: 'Gilroy-SemiBold'"
+                      >{{ item.title }}</span
+                    >
+                    &nbsp;
+                    <span
+                      class="text-sm text-gray-600"
+                      style="font-family: 'Gilroy-Medium'"
+                      >{{ item.intro }}</span
+                    >
+                  </span>
                 </CardHeader>
-                <CardContent>
-                  <div v-html="item.content" class="text-gray-600"></div>
-                </CardContent>
               </Card>
             </a>
           </div>
         </template>
         <template v-else>
-          <div class="border-2 rounded-xl">
+          <div class="border-1 rounded-xl">
             <a class="w-full" :href="`/page/${item.id}/${item.contentId}`">
-              <Card v-if="item" class="mx-auto">
-                <CardHeader>
-                  <div class="w-20 m-auto h-20">
+              <Card v-if="item" class="mx-auto py-[20px]">
+                <CardHeader class="flex flex-row gap-4 px-[20px]">
+                  <div class="aspect-square w-[50px] h-[50px]">
                     <img
                       :src="
                         item.defaultAttachUrl &&
@@ -151,15 +182,25 @@ all_menuItems_fetch();
                           : (item.cdnUrl || '') + (item.defaultAttachUrl || '')
                       "
                       alt="content"
-                      class="w-full h-full"
+                      class="aspect-square w-full h-full"
                     />
                   </div>
-                  <CardTitle class="text-xl">{{ item.title }}</CardTitle>
-                  <!-- <CardDescription>{{ item.intro }}</CardDescription> -->
+                  <span class="line-clamp-2">
+                    <span
+                      class="text-sm font-bold"
+                      style="font-family: 'Gilroy-SemiBold'"
+                    >
+                      {{ item.title }}
+                    </span>
+                    &nbsp;
+                    <span
+                      class="text-sm text-gray-600"
+                      style="font-family: 'Gilroy-Medium'"
+                    >
+                      {{ item.intro }}
+                    </span>
+                  </span>
                 </CardHeader>
-                <CardContent>
-                  <div v-html="item.content" class="text-gray-600"></div>
-                </CardContent>
               </Card>
             </a>
           </div>
