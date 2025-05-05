@@ -23,7 +23,7 @@ const verifyToken = async () => {
         duration: 2000,
         position: "top-right",
       });
-
+      window.location.reload(); // Reload page after token verification
       if (response.data?.token) {
         localStorage.setItem("token", response.data.token);
       }
@@ -48,14 +48,16 @@ verifyToken();
 </script>
 
 <template>
-  <Header />
-  <SidebarProvider>
-    <AppSidebar />
-    <main>
-      <SidebarTrigger />
-    </main>
-    <div class="flex flex-col gap-4"></div>
-    <Main />
-    <Sonner position="top-right" />
-  </SidebarProvider>
+  <div class="bg-white">
+    <Header />
+    <SidebarProvider>
+      <AppSidebar />
+      <main class="lg:ml-6">
+        <SidebarTrigger />
+      </main>
+      <div class="flex flex-col gap-4"></div>
+      <Main />
+      <Sonner position="top-right" />
+    </SidebarProvider>
+  </div>
 </template>

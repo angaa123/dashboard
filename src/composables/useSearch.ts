@@ -142,11 +142,15 @@ export function useSearch() {
   };
 
   const onFinalSearch = async () => {
-    if (search.value.length > 3) {
-      const contentResults = await search_content_content();
-      const introResults = await search_content_intro();
-      const contentTitelResults = await search_content_titel();
-      const titelsResults = await search_titels();
+    if (search.value.length > 1) {
+      // Run API calls in parallel
+      const [contentResults, introResults, contentTitelResults, titelsResults] =
+        await Promise.all([
+          search_content_content(),
+          search_content_intro(),
+          search_content_titel(),
+          search_titels(),
+        ]);
 
       // Combine all results
       const allResults = [
