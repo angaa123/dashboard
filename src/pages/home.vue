@@ -3,14 +3,7 @@ import axios from "axios";
 import { ref, computed } from "vue";
 import { Search } from "lucide-vue-next";
 import Search1 from "@/components/layout_comp/search1.vue";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  // CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Card, CardHeader } from "@/components/ui/card";
 
 const isSearchOpen = ref(false);
 
